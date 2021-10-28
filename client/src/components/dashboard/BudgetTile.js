@@ -9,12 +9,13 @@ const useStyles = makeStyles({
         boxShadow: 'rgb(0 0 0 / 20%) 2px 2px 7px 1px',
         position: 'fixed',
         margin: '0% 0% 0% 0%',
-        left: '25%',
+        left: '50%',
+        transform: 'translateX(-50%)',
         background: 'white',
         color: 'black',
         cursor: 'pointer',
         zIndex: 1,
-        minWidth: "300px"
+        minWidth: "400px"
     },
     cardContent: {
         padding: '8px 8px 8px 20px'
@@ -62,22 +63,36 @@ const useStyles = makeStyles({
     },
     inputDiv: {
         width: "40%"
+    },
+    button: {
+        boxShadow: 'rgba(0, 0, 0, 0.01) 0px 1px 0px -2px',
+        background: 'black',
+        color: 'white',
+        fontSize: '11px',
+        cursor: 'pointer',
+        letterSpacing: '0.5px',
+        borderStyle: 'none',
+        padding: '8px 12px',
+        borderRadius: '2px',
+        margin: '8px 0px'
     }
 })
 
-const BudgetTile = ({ message, low, high, prepareState, budget }) => {
+const BudgetTile = ({ low, high, prepareState, budget, pressButton }) => {
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
     });
+
     const classes = useStyles();
+
     return (
         <div className={classes.card}>
             <div className={classes.cardContent}>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <img className={classes.logo} src={YardzenLogo} alt="Home" />
                 </div>
-                <p className={classes.title}>{message}</p>
+                <p className={classes.title}>Welcome To Your Yardzen Budget Calculator. Please Enter Your Budget and Select Items</p>
                 <div className={classes.cardItems}>
                     <div className={classes.inputDiv}>
                         <label htmlFor="Budget">Budget</label>
@@ -98,6 +113,9 @@ const BudgetTile = ({ message, low, high, prepareState, budget }) => {
                                         : null
                         }
                     </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <button className={classes.button} onClick={() => pressButton()}>Save Items</button>
                 </div>
             </div>
         </div>

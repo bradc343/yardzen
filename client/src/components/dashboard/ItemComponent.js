@@ -19,7 +19,6 @@ const useStyles = makeStyles({
         boxShadow: 'rgb(0 0 0 / 20%) 2px 2px 7px 1px',
         position: 'relative',
         margin: '.5rem 0 1rem 0',
-        width: "400px",
         background: '#616060',
         color: 'white',
         cursor: 'pointer',
@@ -35,7 +34,7 @@ const useStyles = makeStyles({
     }
 })
 
-const ItemComponent = ({ item, updateBudget, key1, itemsInBudget }) => {
+const ItemComponent = ({ item, updateBudget, itemsInBudget }) => {
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -46,7 +45,7 @@ const ItemComponent = ({ item, updateBudget, key1, itemsInBudget }) => {
       });
     const classes = useStyles();
     return (
-        <div className={itemsInBudget ? classes.selectCard : classes.card} key={key1} onClick={() => updateBudget(item)}>
+        <div className={itemsInBudget ? classes.selectCard : classes.card} key={item.uniqueID} onClick={() => updateBudget(item)}>
             <div className={classes.cardContent}>
 
                 <div className={classes.cardItems}>

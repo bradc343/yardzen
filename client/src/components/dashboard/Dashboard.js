@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import axios from 'axios'
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import ItemComponent from './ItemComponent';
 import BudgetTile from './BudgetTile';
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyD7NUVfrImccSo8FuCBG7bXVk0oLFqgE-k",
-//   authDomain: "yardzen-demo.firebaseapp.com",
-//   databaseURL: "https://yardzen-demo.firebaseio.com",
-//   projectId: "yardzen-demo",
-//   storageBucket: "yardzen-demo.appspot.com",
-//   messagingSenderId: "509183652730",
-//   appId: "1:509183652730:web:ba2208f7d8e0882f009cc3"
-// }
+import ResultsPopup from './ResultsPopup';
 
 const useStyles = makeStyles({
   sectionDropdown: {
@@ -29,7 +18,7 @@ const useStyles = makeStyles({
     maxWidth: '1280px'
   },
   section: {
-    top: '237px',
+    top: '250px',
     position: 'relative',
     paddingBottom: '50px'
   }
@@ -39,33 +28,24 @@ const Dashboard = () => {
   const [items, setItems] = useState([])
   const [itemsInBudget, setItemsInBudget] = useState([])
   const [category, setCategory] = useState([])
-  const [message, setMessage] = useState(null)
   const [budget, setBudget] = useState(0)
   const [low, setLow] = useState(0)
   const [high, setHigh] = useState(0)
   const [sectionToDisplay, setSectionToDisplay] = useState([])
   const [refresh, setRefresh] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
 
   const classes = useStyles()
-  useEffect(async () => {
+
+  useEffect(() => {
     document.title = "Dashboard";
-    const items = await axios.get(`/api/getItems`)
-    // const app = initializeApp(firebaseConfig);
-    // const db = getFirestore(app);
-
-    // // Get a list of items from your database
-    // async function getItems(db) {
-    //   const itemsCol = collection(db, 'items');
-    //   const itemsSnapshot = await getDocs(itemsCol);
-    //   const itemsList = itemsSnapshot.docs.map(doc => doc.data());
-    //   return itemsList;
-    // }
-    // var tempItems = await getItems(db)
-    // setItems(tempItems)
-    // setCategory([...new Set(tempItems.map(x => x.type))])
-    setMessage('Welcome To Your Yardzen Budget Calculator. Please Enter Your Budget and Select Items')
-    console.log(items)
-
+    async function fetchData() {
+      const res = await axios.get(`/api/getItems`)
+      setItems(res.data.itemsList)
+      setCategory(res.data.categories)
+      console.log(res)
+    }
+    fetchData();
   }, [sectionToDisplay])
 
   const prepareState = (e) => {
@@ -76,12 +56,7 @@ const Dashboard = () => {
   const updateBudget = (item) => {
     var tempBudgetArray = itemsInBudget
     if (itemsInBudget.includes(item)) {
-      tempBudgetArray = itemsInBudget.filter(x =>
-        x.highPrice !== item.highPrice
-        && x.lowPrice !== item.highPrice
-        && x.name !== item.highPrice
-        && x.type !== item.highPrice
-      )
+      tempBudgetArray = itemsInBudget.filter(x => x.uniqueID !== item.uniqueID)
       setItemsInBudget(tempBudgetArray)
       setLow(low - item.lowPrice)
       setHigh(high - item.highPrice)
@@ -108,43 +83,61 @@ const Dashboard = () => {
 
   }
 
+  const pressButton = async () => {
+    var array = {
+      docs: itemsInBudget
+    }
+    await axios.post(`/api/addToCollection`, array)
+    .then(() => {
+      setShowPopup(true)
+    })
+  }
+
+  const closePopup = () => {
+      setShowPopup(false)
+      setRefresh(!refresh)
+  }
+
   return (
     <div className={classes.container}>
+      {showPopup && <ResultsPopup closePopup={closePopup} /> }
+
       {/* Input */}
       <BudgetTile
-        message={message}
         budget={budget}
         low={low}
         high={high}
+        itemsInBudget={itemsInBudget}
+        pressButton={pressButton}
         prepareState={prepareState}
       />
       {/* Sections */}
       <div className={classes.section}>
-      {category?.map(section => sectionToDisplay.includes(section) ?
-        <div key={section}>
-          <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
-            <p>{section.split('_').join(' ')}</p>
-            <i className="fa fa-caret-up" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
+        {category?.map(section => sectionToDisplay.includes(section) ?
+          <div key={section}>
+            <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
+              <p>{section.split('_').join(' ')}</p>
+              <i className="fa fa-caret-up" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
+            </div>
+            {/* Tiles */}
+            <div style={{ display: "flex", justifyContent: 'space-between', flexWrap: 'wrap' }}>
+              {items.filter(filteredItem => filteredItem.type === section)?.map(item =>
+                <ItemComponent
+                  item={item}
+                  itemsInBudget={itemsInBudget.includes(item)}
+                  updateBudget={updateBudget}
+                />
+              )}
+            </div>
           </div>
-          {/* Tiles */}
-          <div style={{ display: "flex", justifyContent: 'space-between', flexWrap: 'wrap' }}>
-            {items.filter(filteredItem => filteredItem.type === section)?.map((item, index) =>
-              <ItemComponent
-                key1={index}
-                item={item}
-                itemsInBudget={itemsInBudget.includes(item)}
-                updateBudget={updateBudget}
-              />
-            )}
+          : <div key={section}>
+            <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
+              <p>{section.split('_').join(' ')}</p>
+              <i className="fa fa-caret-down" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
+            </div>
           </div>
-        </div>
-        : <div>
-          <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
-            <p>{section.split('_').join(' ')}</p>
-            <i className="fa fa-caret-down" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
-          </div>
-        </div>
-      )}
+        )}
+        
       </div>
     </div>
   )
