@@ -114,9 +114,9 @@ const BudgetTile = ({ low, high, prepareState, budget, pressButton }) => {
 						}
 					</div>
 				</div>
-				<div style={{ display: 'flex', justifyContent: 'center' }}>
+				{low !== 0 && high !== 0 && <div style={{ display: 'flex', justifyContent: 'center' }}>
 					<button className={classes.button} onClick={() => pressButton()}>Save Items</button>
-				</div>
+				</div>}
 			</div>
 		</div>
 
