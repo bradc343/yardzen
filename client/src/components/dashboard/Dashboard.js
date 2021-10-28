@@ -94,19 +94,23 @@ const Dashboard = () => {
       docs: itemsInBudget
     }
     await axios.post(`/api/addToCollection`, array)
-    .then(() => {
-      setShowPopup(true)
-    })
+      .then(() => {
+        setShowPopup(true)
+      })
   }
 
   const closePopup = () => {
-      setShowPopup(false)
-      setRefresh(!refresh)
+    setShowPopup(false)
+    setItemsInBudget([])
+    setBudget(0)
+    setLow(0)
+    setHigh(0)
+    setSectionToDisplay([])
   }
 
   return (
     <div className={classes.container}>
-      {showPopup && <ResultsPopup closePopup={closePopup} /> }
+      {showPopup && <ResultsPopup closePopup={closePopup} />}
 
       {/* Input */}
       <BudgetTile
@@ -134,7 +138,7 @@ const Dashboard = () => {
               {items.filter(filteredItem => filteredItem.type === section)?.map(item =>
                 <ItemComponent
                   item={item}
-                  itemsInBudget={itemsInBudget.includes(item)}
+                  itemsInBudget={itemsInBudget}
                   updateBudget={updateBudget}
                 />
               )}
@@ -151,7 +155,7 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        
+
       </div>
     </div>
   )

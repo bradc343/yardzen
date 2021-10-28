@@ -46,6 +46,13 @@ const useStyles = makeStyles({
         right: '4px',
         color: 'black',
         cursor: 'pointer'
+    },
+    popupDiv: {
+        display: "flex", 
+        alignItems: 'center', 
+        flexDirection: 'column', 
+        overflowY: 'scroll', 
+        maxHeight: '480px'
     }
 })
 
@@ -74,12 +81,12 @@ const ResultsPopup = ({ closePopup }) => {
                     <i className={classes.closeIcon} onClick={() => closePopup()}>X</i>
                     <h1 className={classes.header}>Submitted! Here are your Current and Past items.</h1>
                     {/* Tiles */}
-                    <div style={{ display: "flex", alignItems: 'center', flexDirection: 'column', overflowY: 'scroll' }}>
+                    <div className={classes.popupDiv}>
                         {itemsResult?.map((item, index) =>
                             <ItemComponent
                                 key={index}
                                 item={item}
-                                itemsInBudget={false}
+                                itemsInBudget={[]}
                                 updateBudget={updateBudget}
                             />
                         )}

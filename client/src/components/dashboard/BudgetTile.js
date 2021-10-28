@@ -96,7 +96,7 @@ const BudgetTile = ({ low, high, prepareState, budget, pressButton }) => {
 				<div className={classes.cardItems}>
 					<div className={classes.inputDiv}>
 						<label htmlFor="Budget">Budget</label>
-						<input id="Budget" type='number' style={{ height: "34px" }} onChange={(e) => prepareState(e)}></input>
+						<input id="Budget" type='number' style={{ height: "34px" }} value={budget} onChange={(e) => prepareState(e)}></input>
 					</div>
 					<div className={classes.costRangeDiv}>
 						<p className={classes.costRangeP}>Cost Range</p>
@@ -107,9 +107,9 @@ const BudgetTile = ({ low, high, prepareState, budget, pressButton }) => {
 							: budget > (low / 100) && budget < (high / 100) ?
 								<p className={classes.inBudget}>In Budget</p>
 								: budget < (low / 100) ?
-									<p className={classes.underBudget}>Under Budget</p>
+									<p className={classes.overBudget}>Over Budget</p>
 									: budget > (high / 100) ?
-										<p className={classes.overBudget}>Over Budget</p>
+										<p className={classes.underBudget}>Under Budget</p>
 										: null
 						}
 					</div>
