@@ -48,7 +48,6 @@ const Dashboard = () => {
       const res = await axios.get(`/api/getItems`)
       setItems(res.data.itemsList)
       setCategory(res.data.categories)
-      console.log(res)
     }
     fetchData();
   }, [sectionToDisplay])
@@ -75,7 +74,6 @@ const Dashboard = () => {
   }
 
   const displaySection = (section) => {
-    console.log(section)
     var tempDisplaySection = sectionToDisplay
     if (tempDisplaySection.includes(section)) {
       tempDisplaySection = tempDisplaySection.filter(x => x !== section)
@@ -137,6 +135,7 @@ const Dashboard = () => {
             <div style={{ display: "flex", justifyContent: 'space-between', flexWrap: 'wrap' }}>
               {items.filter(filteredItem => filteredItem.type === section)?.map(item =>
                 <ItemComponent
+                  key={item.uniqueID}
                   item={item}
                   itemsInBudget={itemsInBudget}
                   updateBudget={updateBudget}

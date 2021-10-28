@@ -30,7 +30,6 @@ module.exports = router => {
             })
         }
 
-
         res.json({
             categories: categories,
             itemsList: tempItemsList
@@ -60,7 +59,6 @@ module.exports = router => {
         });
 
         batch.commit()
-
 
         res.json({
             docs
