@@ -20,7 +20,12 @@ const useStyles = makeStyles({
   section: {
     top: '250px',
     position: 'relative',
-    paddingBottom: '50px'
+    paddingBottom: '50px',
+    cursor: 'pointer'
+  },
+  smallFont: {
+    color: '#336EBD',
+    fontSize: '10px'
   }
 })
 
@@ -61,10 +66,11 @@ const Dashboard = () => {
       setLow(low - item.lowPrice)
       setHigh(high - item.highPrice)
     } else {
+      tempBudgetArray = tempBudgetArray.filter(x => x.type !== item.type)
       tempBudgetArray.push(item)
       setItemsInBudget(tempBudgetArray)
-      setLow(low + item.lowPrice)
-      setHigh(high + item.highPrice)
+      setLow(tempBudgetArray.map(itemSum => itemSum.lowPrice).reduce((prev, next) => prev + next))
+      setHigh(tempBudgetArray.map(itemSum => itemSum.highPrice).reduce((prev, next) => prev + next))
     }
   }
 
@@ -116,7 +122,11 @@ const Dashboard = () => {
         {category?.map(section => sectionToDisplay.includes(section) ?
           <div key={section}>
             <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
-              <p>{section.split('_').join(' ')}</p>
+              <p>{section.split('_').join(' ')}
+                <span className={classes.smallFont}>
+                  &emsp;&emsp;&emsp;{'(Select only 1)'}
+                </span>
+              </p>
               <i className="fa fa-caret-up" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
             </div>
             {/* Tiles */}
@@ -132,7 +142,11 @@ const Dashboard = () => {
           </div>
           : <div key={section}>
             <div className={classes.sectionDropdown} onClick={() => displaySection(section)}>
-              <p>{section.split('_').join(' ')}</p>
+              <p>{section.split('_').join(' ')}
+                <span className={classes.smallFont}>
+                  &emsp;&emsp;&emsp;{'(Select only 1)'}
+                </span>
+              </p>
               <i className="fa fa-caret-down" style={{ marginBottom: 'auto', marginTop: 'auto' }}></i>
             </div>
           </div>
